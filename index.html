@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Photos Uploader</title>
     
-    <link rel="manifest" href='data:application/json,{"name":"Google Photos Uploader","short_name":"GP Uploader","icons":[{"src":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cGF0aCBmaWxsPSIjNDI4NUY0IiBkPSJNODQgMGgyNHYyNEg4NHoiLz48cGF0aCBmaWxsPSIjMzRBODUzIiBkPSJNMTY4IDg0aDI0djI0aC0yNHoiLz48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNODQgMTY4aDI0djI0SDg0eiIvPjxwYXRoIGZpbGw9IiNFQTQzMzUiIGQ9Ik0wIDg0aDI0djI0SDB6Ii8+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTQ4IDQ4YzEzLjIgMCAyNCAxMC44IDI0IDI0cy0xMC44IDI0LTI0IDI0LTI0LTEwLjgtMjQtMjQgMTAuOC0yNCAyNC0yNHoiLz48cGF0aCBmaWxsPSIjMzRBODUzIiBkPSJNMTQ0IDQ4YzEzLjIgMCAyNCAxMC44IDI0IDI0cy0xMC44IDI0LTI0IDI0LTI0LTEwLjgtMjQtMjQgMTAuOC0yNCAyNC0yNHoiLz48cGF0aCBmaWxsPSIjRkJCQzA1IiBkPSJNMTQ0IDE0NGMtMTMuMiAwLTI0LTEwLjgtMjQtMjRzMTAuOC0yNCAyNC0yNCAyNCAxMC44IDI0IDI0LTEwLjggMjQtMjQgMjR6Ii8+PHBhdGggZmlsbD0iI0VBNDMzNSIgZD0iTTQ4IDE0NGMtMTMuMiAwLTI0LTEwLjgtMjQtMjRzMTAuOC0yNCAyNC0yNCAyNCAxMC44IDI0IDI0LTEwLjggMjQtMjQgMjQgMjR6Ii8+PC9zdmc+","sizes":"192x192","type":"image/svg+xml"}],"start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a"}'>
+    <!-- PWA Manifest & Icons (ใช้รูป PNG จากเซิร์ฟเวอร์หลักของ Google เพื่อให้แสดงผล 100%) -->
+    <link rel="manifest" href='data:application/json,{"name":"Google Photos Uploader","short_name":"GP Uploader","icons":[{"src":"https://ssl.gstatic.com/images/branding/product/2x/photos_64dp.png","sizes":"128x128","type":"image/png"}],"start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a"}'>
+    
+    <!-- Web Favicon (แสดงบน Tab ของเบราว์เซอร์) -->
+    <link rel="icon" href="https://ssl.gstatic.com/images/branding/product/1x/photos_64dp.png" type="image/png">
+    
+    <!-- iOS / Android Home Screen Icon -->
+    <link rel="apple-touch-icon" href="https://ssl.gstatic.com/images/branding/product/2x/photos_64dp.png">
+    
     <meta name="theme-color" content="#0f172a">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,7 +21,6 @@
     <style>
         body { background-color: #0f172a; }
         .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        /* สำหรับ Scrollbar ในหน้าต่าง Error */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
@@ -24,6 +31,7 @@
     <!-- หน้าจอตั้งค่า -->
     <div id="setup-screen" class="glass-panel w-full max-w-md rounded-3xl p-8 shadow-2xl relative z-10">
         <div class="flex justify-center mb-6">
+            <!-- Web Logo UI (ใช้ Inline SVG เพื่อความคมชัดสูงสุดบนหน้าจอ) -->
             <svg class="w-16 h-16 drop-shadow-lg" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
                 <path fill="#4285F4" d="M84 0h24v24H84z"/><path fill="#34A853" d="M168 84h24v24h-24z"/><path fill="#FBBC05" d="M84 168h24v24H84z"/><path fill="#EA4335" d="M0 84h24v24H0z"/><path fill="#4285F4" d="M48 48c13.2 0 24 10.8 24 24s-10.8 24-24 24-24-10.8-24-24 10.8-24 24-24z"/><path fill="#34A853" d="M144 48c13.2 0 24 10.8 24 24s-10.8 24-24 24-24-10.8-24-24 10.8-24 24-24z"/><path fill="#FBBC05" d="M144 144c-13.2 0-24-10.8-24-24s10.8-24 24-24 24 10.8 24 24-10.8 24-24 24z"/><path fill="#EA4335" d="M48 144c-13.2 0-24-10.8-24-24s10.8-24 24-24 24 10.8 24 24-10.8 24-24 24z"/>
             </svg>
@@ -34,6 +42,315 @@
             <input type="password" id="cfg-secret" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm text-white" placeholder="Client Secret (ตัวเลือก)">
             <textarea id="cfg-token" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm text-white h-24" placeholder="วาง Access Token (JSON หรือขึ้นต้นด้วย ya29...)"></textarea>
             
+            <div id="config-error" class="hidden text-red-400 text-xs text-center font-medium"></div>
+
+            <button id="save-btn" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl mt-4 transition-colors">บันทึกและเริ่มใช้งาน</button>
+        </div>
+    </div>
+
+    <!-- หน้าจออัปโหลด -->
+    <div id="upload-screen" class="hidden glass-panel w-full max-w-md rounded-3xl p-8 shadow-2xl relative z-10">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#4285F4" d="M84 0h24v24H84z"/><path fill="#34A853" d="M168 84h24v24h-24z"/><path fill="#FBBC05" d="M84 168h24v24H84z"/><path fill="#EA4335" d="M0 84h24v24H0z"/><path fill="#4285F4" d="M48 48c13.2 0 24 10.8 24 24s-10.8 24-24 24-24-10.8-24-24 10.8-24 24-24z"/><path fill="#34A853" d="M144 48c13.2 0 24 10.8 24 24s-10.8 24-24 24-24-10.8-24-24 10.8-24 24-24z"/><path fill="#FBBC05" d="M144 144c-13.2 0-24-10.8-24-24s10.8-24 24-24 24 10.8 24 24-10.8 24-24 24z"/><path fill="#EA4335" d="M48 144c-13.2 0-24-10.8-24-24s10.8-24 24-24 24 10.8 24 24-10.8 24-24 24z"/>
+                </svg>
+                <h1 class="font-bold text-white text-lg">อัปโหลดสื่อ</h1>
+            </div>
+            <button id="reset-btn" class="text-xs text-slate-400 hover:text-white transition-colors bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">ตั้งค่าใหม่</button>
+        </div>
+        
+        <div id="drop-zone" class="border-2 border-dashed border-slate-600 rounded-2xl p-6 text-center hover:border-blue-500 hover:bg-slate-800/50 transition-all cursor-pointer group">
+            <input type="file" id="media-input" accept=".mp4,.mov,.jpeg,.jpg,.png,.gif" class="hidden">
+            <div class="bg-slate-800 group-hover:bg-blue-900/30 w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-3 transition-colors">
+                <i data-lucide="upload-cloud" class="w-7 h-7 text-blue-400"></i>
+            </div>
+            <p class="text-sm font-medium text-slate-300">คลิกเพื่อเลือกไฟล์สื่อ</p>
+            <p class="text-xs text-slate-500 mt-1">MP4, MOV, JPG, PNG, GIF</p>
+        </div>
+
+        <div id="preview-container" class="hidden mt-4 space-y-4">
+            <div id="media-preview" class="rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center border border-slate-700 relative">
+                <button id="clear-preview-btn" class="absolute top-2 right-2 bg-black/60 hover:bg-red-500/80 text-white rounded-full p-1.5 backdrop-blur-sm transition-colors z-10">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <p id="file-info" class="text-xs text-slate-400 text-center truncate"></p>
+            <button id="upload-btn" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-colors">เริ่มอัปโหลด</button>
+        </div>
+        <div id="status-message" class="mt-4 hidden p-3 rounded-lg text-sm text-center"></div>
+    </div>
+
+    <!-- Modal วิเคราะห์ปัญหา (Troubleshooting) -->
+    <div id="error-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-rose-900/50 p-4 border-b border-rose-800/50 flex justify-between items-center">
+                <h3 class="text-rose-400 font-bold flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                    พบปัญหา Failed to fetch (CORS Error)
+                </h3>
+                <button id="close-modal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scroll space-y-5 text-sm text-slate-300">
+                <p>ปัญหานี้เกิดขึ้นเนื่องจาก Google บล็อกการเชื่อมต่อเพื่อความปลอดภัย สาเหตุที่เป็นไปได้มีดังนี้:</p>
+                
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700">
+                    <h4 class="font-bold text-white mb-2 flex items-center gap-2"><span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs">1</span>คุณเปิดไฟล์ HTML โดยตรง (file:///)</h4>
+                    <p class="text-slate-400">เบราว์เซอร์ไม่อนุญาตให้ไฟล์ที่เปิดจากเครื่องตรงๆ เรียกใช้งาน API <br><br>
+                    <strong class="text-blue-400">วิธีแก้:</strong> ต้องรันผ่าน Local Server เช่น ใช้ Extension <code class="bg-slate-800 px-1 py-0.5 rounded text-pink-400">Live Server</code> ใน VS Code หรือใช้คำสั่ง <code class="bg-slate-800 px-1 py-0.5 rounded text-pink-400">python -m http.server</code></p>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700">
+                    <h4 class="font-bold text-white mb-2 flex items-center gap-2"><span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs">2</span>ยังไม่ได้ตั้งค่า Authorized Origins ใน Google Cloud</h4>
+                    <p class="text-slate-400">ถ้าคุณรัน Local Server แล้วได้ URL เช่น <code class="text-green-400">http://localhost:5500</code> หรือถ้าคุณรันบนเว็บอื่นๆ <br><br>
+                    <strong class="text-blue-400">วิธีแก้:</strong> คุณต้องเข้าไปที่ <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="text-blue-400 underline">Google Cloud Console</a> ไปที่ Client ID ของคุณ และเพิ่ม URL ปัจจุบันนี้ ลงในช่อง <strong class="text-white">Authorized JavaScript origins</strong> จากนั้นรอประมาณ 5 นาที</p>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700">
+                    <h4 class="font-bold text-white mb-2 flex items-center gap-2"><span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs">3</span>Access Token หมดอายุ</h4>
+                    <p class="text-slate-400">Token ของ Google มีอายุเพียง 1 ชั่วโมง เมื่อหมดอายุการใช้งาน Google จะไม่ส่งค่าอนุญาตกลับมา ทำให้เกิด Error นี้เช่นกัน<br><br>
+                    <strong class="text-blue-400">วิธีแก้:</strong> กลับไปหน้าตั้งค่า และขอ Access Token ชุดใหม่มาใส่</p>
+                </div>
+                
+                <div class="mt-4 p-3 bg-slate-800 rounded-lg border border-slate-600 text-center">
+                    <p class="text-xs text-slate-400 mb-1">URL ปัจจุบันของคุณคือ:</p>
+                    <code id="current-url" class="text-green-400 font-bold bg-slate-900 px-2 py-1 rounded select-all"></code>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-900 border-t border-slate-700 text-right">
+                <button id="understand-btn" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors">รับทราบ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        let config = {};
+        
+        // แสดง URL ปัจจุบันใน Modal
+        document.getElementById('current-url').textContent = window.location.origin;
+        
+        // จัดการ Modal
+        function showErrorModal() {
+            document.getElementById('error-modal').classList.remove('hidden');
+        }
+        document.getElementById('close-modal').onclick = () => document.getElementById('error-modal').classList.add('hidden');
+        document.getElementById('understand-btn').onclick = () => document.getElementById('error-modal').classList.add('hidden');
+        
+        function checkAndShowUI() {
+            const configStr = localStorage.getItem('gp_config');
+            if (configStr) {
+                try {
+                    config = JSON.parse(configStr);
+                    if (config.token && config.token.access_token) {
+                        document.getElementById('setup-screen').classList.add('hidden');
+                        document.getElementById('upload-screen').classList.remove('hidden');
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Invalid config format in storage", e);
+                }
+            }
+            document.getElementById('setup-screen').classList.remove('hidden');
+            document.getElementById('upload-screen').classList.add('hidden');
+        }
+
+        checkAndShowUI();
+
+        document.getElementById('save-btn').onclick = () => {
+            const idInput = document.getElementById('cfg-id').value.trim();
+            const secretInput = document.getElementById('cfg-secret').value.trim();
+            const tokenInput = document.getElementById('cfg-token').value.trim();
+            const errorMsg = document.getElementById('config-error');
+            
+            errorMsg.classList.add('hidden');
+
+            if (!tokenInput) {
+                errorMsg.textContent = "กรุณาระบุ Access Token";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            let parsedToken = {};
+            
+            try {
+                parsedToken = JSON.parse(tokenInput);
+            } catch (e) {
+                if (tokenInput.startsWith('ya29.')) {
+                    parsedToken = { access_token: tokenInput };
+                } else {
+                    errorMsg.textContent = "รูปแบบ Token ไม่ถูกต้อง! ต้องเป็น JSON หรือรหัสที่ขึ้นต้นด้วย ya29";
+                    errorMsg.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            if (!parsedToken.access_token) {
+                errorMsg.textContent = "ไม่พบ 'access_token' ในข้อมูลที่คุณกรอก";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            const newConfig = {
+                id: idInput,
+                secret: secretInput,
+                token: parsedToken
+            };
+            
+            localStorage.setItem('gp_config', JSON.stringify(newConfig));
+            checkAndShowUI();
+        };
+
+        document.getElementById('reset-btn').onclick = () => {
+            localStorage.removeItem('gp_config');
+            config = {};
+            document.getElementById('cfg-id').value = '';
+            document.getElementById('cfg-secret').value = '';
+            document.getElementById('cfg-token').value = '';
+            
+            resetPreview();
+            document.getElementById('status-message').classList.add('hidden');
+            checkAndShowUI();
+        };
+
+        const mediaInput = document.getElementById('media-input'), 
+              dropZone = document.getElementById('drop-zone');
+              
+        dropZone.onclick = () => mediaInput.click();
+        
+        mediaInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('preview-container').classList.remove('hidden');
+            document.getElementById('file-info').textContent = file.name;
+            
+            const previewBox = document.getElementById('media-preview');
+            const fileUrl = URL.createObjectURL(file);
+            
+            const children = Array.from(previewBox.children);
+            children.forEach(child => {
+                if(child.id !== 'clear-preview-btn') previewBox.removeChild(child);
+            });
+            
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = fileUrl;
+                img.className = "max-h-full object-contain p-2";
+                previewBox.appendChild(img);
+            } else {
+                const video = document.createElement('video');
+                video.src = fileUrl;
+                video.controls = true;
+                video.className = "w-full h-full object-contain";
+                previewBox.appendChild(video);
+            }
+            
+            dropZone.classList.add('hidden');
+            
+            const uploadBtn = document.getElementById('upload-btn');
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = 'เริ่มอัปโหลด';
+            uploadBtn.className = 'w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-colors';
+            
+            document.getElementById('status-message').classList.add('hidden');
+        };
+
+        document.getElementById('clear-preview-btn').onclick = resetPreview;
+        
+        function resetPreview() {
+            mediaInput.value = '';
+            document.getElementById('preview-container').classList.add('hidden');
+            dropZone.classList.remove('hidden');
+        }
+
+        document.getElementById('upload-btn').onclick = async () => {
+            const file = mediaInput.files[0];
+            if (!file) return;
+            
+            const uploadBtn = document.getElementById('upload-btn');
+            const status = document.getElementById('status-message');
+            
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'กำลังดำเนินการ...';
+            uploadBtn.className = 'w-full py-3.5 bg-slate-600 text-slate-300 font-bold rounded-xl cursor-wait';
+            
+            status.classList.remove('hidden');
+            status.textContent = 'กำลังอัปโหลดไฟล์สู่ Google Servers...';
+            status.className = 'mt-4 p-3 rounded-lg text-sm bg-blue-900/30 text-blue-300';
+
+            try {
+                const tokenRes = await fetch('https://photoslibrary.googleapis.com/v1/uploads', {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${config.token.access_token}`,
+                        'Content-type': 'application/octet-stream',
+                        'X-Goog-Upload-Content-Type': file.type,
+                        'X-Goog-Upload-Protocol': 'raw' 
+                    },
+                    body: file
+                });
+                
+                if (tokenRes.status === 401) {
+                    throw new Error('Access Token หมดอายุ (401 Unauthorized)');
+                }
+                if (!tokenRes.ok) {
+                    throw new Error(`การอัปโหลดล้มเหลว (Status: ${tokenRes.status})`);
+                }
+                
+                const uploadToken = await tokenRes.text();
+                
+                status.textContent = 'กำลังบันทึกลงในคลังภาพของคุณ...';
+                
+                const createRes = await fetch('https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate', {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${config.token.access_token}`, 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({ 
+                        newMediaItems: [{ 
+                            description: `อัปโหลดผ่าน Web App - ${file.name}`,
+                            simpleMediaItem: { uploadToken: uploadToken } 
+                        }] 
+                    })
+                });
+                
+                const result = await createRes.json();
+                
+                if(result.newMediaItemResults && result.newMediaItemResults[0].status.message !== "Success" && result.newMediaItemResults[0].status.message !== "OK") {
+                     throw new Error(result.newMediaItemResults[0].status.message);
+                }
+                
+                status.textContent = 'อัปโหลดสำเร็จเรียบร้อย!';
+                status.className = 'mt-4 p-3 rounded-lg text-sm font-medium bg-green-900/30 text-green-300 border border-green-800';
+                
+                uploadBtn.textContent = 'อัปโหลดสำเร็จ';
+                uploadBtn.className = 'w-full py-3.5 bg-green-600 text-white font-bold rounded-xl';
+                
+            } catch (e) {
+                if (e.message.includes("Failed to fetch") || e.message.includes("NetworkError")) {
+                    showErrorModal();
+                    status.innerHTML = `<i data-lucide="alert-circle" class="inline w-4 h-4 mr-1"></i> ถูกบล็อก (CORS) หรือ Token หมดอายุ`;
+                } else {
+                    status.innerHTML = `<i data-lucide="alert-circle" class="inline w-4 h-4 mr-1"></i> Error: ${e.message}`;
+                }
+                
+                status.className = 'mt-4 p-3 rounded-lg text-sm bg-red-900/30 text-red-300 border border-red-800';
+                
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'ลองใหม่อีกครั้ง';
+                uploadBtn.className = 'w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-colors';
+                lucide.createIcons();
+            }
+        };
+    </script>
+</body>
+</html>
+
+
+```
             <div id="config-error" class="hidden text-red-400 text-xs text-center font-medium"></div>
 
             <button id="save-btn" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl mt-4 transition-colors">บันทึกและเริ่มใช้งาน</button>
