@@ -1,0 +1,99 @@
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อัปโหลดสื่อ - Google Photos</title>
+    
+    <!-- ใช้ไอคอนมาตรฐานที่รองรับโดย Browser โดยตรง -->
+    <link rel="icon" href="https://www.google.com/favicon.ico" type="image/x-icon">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background-color: #0f172a; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 bg-slate-900 text-slate-200">
+
+    <div class="glass-panel w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative p-8">
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                <!-- เปลี่ยนมาใช้ SVG ของ Google Photos โดยตรงเพื่อป้องกันปัญหาโหลดไม่ขึ้น -->
+                <svg class="w-16 h-16" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#4285F4" d="M84 0h24v24H84z"/><path fill="#34A853" d="M168 84h24v24h-24z"/><path fill="#FBBC05" d="M84 168h24v24H84z"/><path fill="#EA4335" d="M0 84h24v24H0z"/><path fill="#4285F4" d="M48 48c13.2 0 24 10.8 24 24s-10.8 24-24 24-24-10.8-24-24 10.8-24 24-24z"/><path fill="#34A853" d="M144 48c13.2 0 24 10.8 24 24s-10.8 24-24 24-24-10.8-24-24 10.8-24 24-24z"/><path fill="#FBBC05" d="M144 144c-13.2 0-24-10.8-24-24s10.8-24 24-24 24 10.8 24 24-10.8 24-24 24z"/><path fill="#EA4335" d="M48 144c-13.2 0-24-10.8-24-24s10.8-24 24-24 24 10.8 24 24-10.8 24-24 24z"/>
+                </svg>
+            </div>
+            <h1 class="text-xl font-bold text-white">Google Photos Uploader</h1>
+            <p class="text-slate-400 text-sm">อัปโหลดรูปและวิดีโอเข้าคลังภาพ</p>
+        </div>
+
+        <div id="drop-zone" class="border-2 border-dashed border-slate-600 rounded-2xl p-6 text-center hover:border-blue-500 transition-all cursor-pointer">
+            <input type="file" id="media-input" accept="image/*,video/*" class="hidden">
+            <i data-lucide="upload-cloud" class="w-10 h-10 text-blue-400 mx-auto mb-2"></i>
+            <p class="text-sm">คลิกเพื่อเลือกไฟล์สื่อ</p>
+        </div>
+
+        <div id="preview-container" class="hidden mt-4 space-y-4">
+            <div id="media-preview" class="rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center border border-slate-700"></div>
+            <p id="file-info" class="text-xs text-slate-400 text-center"></p>
+            <button id="upload-btn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all">เริ่มอัปโหลด</button>
+        </div>
+        
+        <div id="status-message" class="mt-4 hidden p-3 rounded-lg text-sm text-center"></div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const ACCESS_TOKEN = "ya29.a0AQvPyIPYtmbNvZ89m36otCCHZQAu764Hdekj95a1sHddkAzAjNbxYhr5MWdZR8s6OZn51avr2yzTnk28fl76u4dZrejvCOi5m4sYmaC2yMnFeMJh3SjQ3n48eOmk6c08A63VzE5Z73rne5LeTdKgwlhMc2t62sI_WV4Yt0iLhFJJQ_73cBWt06kJP9MV-SGJpFaLuc4aCgYKAT8SARQSFQHGX2MiKZ6GDwB-4GzSdwsKAeQuSQ0206";
+
+        const mediaInput = document.getElementById('media-input'), dropZone = document.getElementById('drop-zone');
+        const preview = document.getElementById('media-preview'), btn = document.getElementById('upload-btn');
+        const status = document.getElementById('status-message');
+
+        dropZone.onclick = () => mediaInput.click();
+        mediaInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            document.getElementById('preview-container').classList.remove('hidden');
+            document.getElementById('file-info').textContent = `ไฟล์: ${file.name}`;
+            preview.innerHTML = file.type.startsWith('image') ? `<img src="${URL.createObjectURL(file)}" class="max-h-full">` : `<video src="${URL.createObjectURL(file)}" controls class="w-full"></video>`;
+            dropZone.classList.add('hidden');
+        };
+
+        btn.onclick = async () => {
+            const file = mediaInput.files[0];
+            btn.disabled = true;
+            btn.textContent = 'กำลังอัปโหลด...';
+            status.className = 'mt-4 p-3 rounded-lg text-sm bg-blue-900/30 text-blue-300';
+            status.textContent = 'กำลังส่งข้อมูล...';
+            status.classList.remove('hidden');
+
+            try {
+                const token = await (await fetch('https://photoslibrary.googleapis.com/v1/uploads', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${ACCESS_TOKEN}`, 'Content-type': 'application/octet-stream', 'X-Goog-Upload-Protocol': 'raw' },
+                    body: file
+                })).text();
+
+                await fetch('https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${ACCESS_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newMediaItems: [{ simpleMediaItem: { uploadToken: token } }] })
+                });
+
+                status.textContent = 'อัปโหลดเสร็จสิ้น!';
+                status.className = 'mt-4 p-3 rounded-lg text-sm bg-green-900/30 text-green-300';
+            } catch (e) {
+                status.textContent = 'ข้อผิดพลาด: ' + e.message;
+                status.className = 'mt-4 p-3 rounded-lg text-sm bg-red-900/30 text-red-300';
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
+
+```
